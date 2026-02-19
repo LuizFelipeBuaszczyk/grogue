@@ -67,19 +67,19 @@ class PptService:
 
         if responses[0]["response"] == responses[1]["response"]:
             return res
-
-        if responses[0]["response"] == "pedra":
-            if responses[1]["response"] == "tesoura":
+        
+        if responses[0]["response"] == "PEDRA":
+            if responses[1]["response"] == "TESOURA":
                 res["winner"] = responses[0]["user"]
             else:
                 res["winner"] = responses[1]["user"]
-        elif responses[0]["response"] == "papel":
-            if responses[1]["response"] == "pedra":
+        elif responses[0]["response"] == "PAPEL":
+            if responses[1]["response"] == "PEDRA":
                 res["winner"] = responses[0]["user"]
             else:
                 res["winner"] = responses[1]["user"]
         else:
-            if responses[1]["response"] == "papel":
+            if responses[1]["response"] == "PAPEL":
                 res["winner"] = responses[0]["user"]
             else:
                 res["winner"] = responses[1]["user"]
