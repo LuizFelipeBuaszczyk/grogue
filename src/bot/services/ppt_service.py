@@ -1,5 +1,5 @@
 from discord.user import User
-from bot.exceptions.exceptions import UserAlreadyResponded, ChallangeNotExists, UsersAreSame
+from bot.exceptions.exceptions import UserAlreadyResponded, ChallengeNotExists, UsersAreSame, UserIsntInChallange
 
 from bot.enums.status_game_enum import StatusGame
 
@@ -26,28 +26,31 @@ class PptService:
             "user": user
         }
 
-        challange: dict = RESPONSES.get(id_message)
-        if not challange:
-            raise ChallangeNotExists
+        challenge: dict = RESPONSES.get(id_message)
+        if not challenge:
+            raise ChallengeNotExists
 
-        if challange.get(user.id):
+        if challenge.get(user.id):
             raise UserAlreadyResponded
         
-        challange[user.id] = data
-        RESPONSES[id_message] = challange
+        if user.id not in challenge.keys():
+            raise UserIsntInChallange
+        
+        challenge[user.id] = data
+        RESPONSES[id_message] = challenge
 
         return
     
     @staticmethod
-    def verify_response(id_message: str):
+    def verify_response(id_message: str)-> dict:
 
-        challange: dict = RESPONSES.get(id_message)
-
-        if not challange:
-            raise ChallangeNotExists
+        challenge: dict = RESPONSES.get(id_message)
+        
+        if not challenge:
+            raise ChallengeNotExists
         
 
-        keys = list(challange.keys())
+        keys = list(challenge.keys())
         
         res = {
             "winner": None,
@@ -55,14 +58,15 @@ class PptService:
         }
         
         
-        responses = [challange[key] for key in keys if challange[key]]
+        responses = [challenge[key] for key in keys if challenge[key]]
         if len(responses) < 2:
             return res
         
         res["status"] = StatusGame.FINISHED
+        RESPONSES[id_message] = None
 
         if responses[0]["response"] == responses[1]["response"]:
-            return 
+            return res
 
         if responses[0]["response"] == "pedra":
             if responses[1]["response"] == "tesoura":

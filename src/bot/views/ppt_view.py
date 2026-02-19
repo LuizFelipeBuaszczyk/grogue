@@ -4,7 +4,7 @@ from bot.services.ppt_service import PptService
 from bot.enums.ppt_enum import Ppt
 from bot.enums.status_game_enum  import StatusGame
 
-from bot.exceptions.exceptions import UserAlreadyResponded, ChallangeNotExists
+from bot.exceptions.exceptions import UserAlreadyResponded, ChallengeNotExists, UserIsntInChallange
 
 class PptView(discord.ui.View):
 
@@ -24,10 +24,12 @@ class PptView(discord.ui.View):
         except UserAlreadyResponded:
             await interact.response.send_message(f"A sua jogada já foi efetuada anteriormente, não é posível muda-lá.", ephemeral=True)
             return
-        except ChallangeNotExists:
+        except ChallengeNotExists:
             await interact.response.send_message(f"O desafio nao existe!", ephemeral=True)
             return
-
+        except UserIsntInChallange:
+            await interact.response.send_message(f"Você não faz parte deste desafio.", ephemeral=True)
+            return
         try:
             winner = PptService.verify_response(id_message=interact.message.id)
             
@@ -36,6 +38,6 @@ class PptView(discord.ui.View):
                     await interact.followup.send(f"O jogo acabou! O ganhador foi: {winner['winner'].name}")
                 else:
                     await interact.followup.send("O jogo acabou em empate!")
-        except ChallangeNotExists:
+        except ChallengeNotExists:
             await interact.followup.send(f"O desafio nao existe!", ephemeral=True)
             return
