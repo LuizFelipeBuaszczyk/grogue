@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from bot.views.matchup_view import MatchupView
+
 def setup(bot: commands.Bot):
 
     @bot.command()
@@ -11,5 +13,6 @@ def setup(bot: commands.Bot):
             description=f"O usuário {ctx.author.mention} desafiou o usuário {challenged.mention}!"
         )
         await ctx.send(
-            embed=embed
+            embed=embed,
+            view=MatchupView()
         )
